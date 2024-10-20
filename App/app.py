@@ -282,5 +282,5 @@ def submit_billing():
     return redirect(url_for('Billing'))  # Redirect back to the billing page or wherever needed
 
 if __name__ == "__main__":
-    app.run(debug=True , port=8080)
-    # app.run(debug=True,host='11.12.8.84',port='8080')    
+    # app.run(debug=True , port=8080)
+    app.run(debug=True,host='11.12.20.192',port='8080')    
