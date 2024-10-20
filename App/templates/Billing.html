@@ -1,107 +1,96 @@
 {% extends "base.html" %}
-
 {% block Style %}
-    <link rel="stylesheet" href="{{url_for('static', filename='css/billing.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/billing.css') }}">
 {% endblock %}
-
-{% block title %}
-    Billing
-{% endblock %}
-
+{% block title %}Billing{% endblock %}
 {% block contentSection %}
-    <div id="abc">
-        <h2>Billing Information</h2>
-
-        <!-- Saree Information Form -->
-        <div class="saree-info-form">
-            <h3>Add Saree Information</h3>
-            <div class="form-group">
-                <label for="saree-id">Saree ID</label>
-                <input type="text" id="saree-id" name="saree_id" class="form-control" placeholder="Enter Saree ID" required>
+    <div class="billing-container">
+        <form method="POST" action="{{ url_for('submit_billing') }}" id="billing-form">
+            <div class="saree-details">
+                <h3>Add Saree Details</h3>
+                <div class="form-group">
+                    <label for="sareeId">Saree ID</label>
+                    <input type="text" id="sareeId" name="sareeId" required placeholder="Enter Saree ID">
+                </div>
+                <div class="form-group">
+                    <label for="cost">Cost (Rs.)</label>
+                    <input type="number" id="cost" name="cost" required placeholder="Enter Cost">
+                </div>
+                <button type="button" class="Styled-button" id="add-saree">Add Saree</button>
             </div>
-            <div class="form-group">
-                <label for="saree-price">Price</label>
-                <input type="text" id="saree-price" name="saree_price" class="form-control" placeholder="Enter Saree Price" required>
+            
+            <div class="saree-list">
+                <h3>Added Sarees</h3>
+                <div id="saree-list-container">
+                    <!-- Dynamically added saree cards will appear here -->
+                </div>
             </div>
-            <button type="button" class="Styled-button" id="add-saree">Add Saree</button>
-        </div>
 
-        <!-- Display List of Added Sarees as Cards -->
-        <div class="saree-list-container">
-            <h3>Added Sarees</h3>
-            <div id="saree-card-list">
-                <!-- Cards will be displayed here -->
+            <div class="address-details">
+                <h3>Address</h3>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" name="address" required placeholder="Enter your address">
+                </div>
             </div>
-        </div>
 
-        <!-- Address Section -->
-        <div class="address-info">
-            <h3>Shipping Address</h3>
-            <div class="form-group">
-                <label for="user-address">Address</label>
-                <input type="text" id="user-address" name="user_address" class="form-control" placeholder="Enter your address" required>
+            <div class="payment-summary">
+                <h3>Payment Summary</h3>
+                <div id="payment-summary-container">
+                    <p>Total Amount: <span id="total-amount">Rs. 0 /-</span></p>
+                </div>
             </div>
-        </div>
 
-        <!-- Payment Summary -->
-        <div id="billing-summary">
-            <h3>Payment Summary</h3>
-            <p>Subtotal: ₹ <span id="subtotal">0.00</span></p>
-            <p>Tax (18%): ₹ <span id="tax">0.00</span></p>
-            <p><strong>Total: ₹ <span id="total">0.00</span></strong></p>
-        </div>
-
-        <!-- Payment Button -->
-        <div id="payment-button">
-            <button type="submit" class="Styled-button">Proceed to Payment</button>
-        </div>
+            <button type="submit" class="Styled-button">Submit Billing</button>
+        </form>
     </div>
 
-    <!-- JavaScript to handle adding sarees and updating summary -->
     <script>
-        let subtotal = 0;
+        const sareeListContainer = document.getElementById('saree-list-container');
+        const totalAmountElement = document.getElementById('total-amount');
+        let totalAmount = 0;
+
         document.getElementById('add-saree').addEventListener('click', function() {
-            const sareeId = document.getElementById('saree-id').value;
-            const sareePrice = parseFloat(document.getElementById('saree-price').value);
+            const sareeId = document.getElementById('sareeId').value;
+            const cost = parseFloat(document.getElementById('cost').value);
 
-            // Add to the list only if both fields are filled
-            if (sareeId && !isNaN(sareePrice)) {
-                const sareeList = document.getElementById('saree-card-list');
-
-                // Create a new card for the saree
-                const card = document.createElement('div');
-                card.className = 'saree-card';
-                card.innerHTML = `
-                    <p><strong>ID:</strong> ${sareeId}</p>
-                    <p><strong>Price:</strong> ₹${sareePrice.toFixed(2)}</p>
+            if (sareeId && cost) {
+                // Create saree card
+                const sareeCard = document.createElement('div');
+                sareeCard.classList.add('saree-card');
+                sareeCard.innerHTML = `
+                    <p><strong>Saree ID:</strong> ${sareeId}</p>
+                    <p><strong>Cost:</strong> Rs. ${cost} /-</p>
+                    <button class="edit-button">Edit</button>
                     <button class="remove-button">Remove</button>
                 `;
-                sareeList.appendChild(card);
+                sareeListContainer.appendChild(sareeCard);
 
-                // Update subtotal
-                subtotal += sareePrice;
-                updateSummary();
-
-                // Add event listener to the remove button
-                card.querySelector('.remove-button').addEventListener('click', function() {
-                    sareeList.removeChild(card);
-                    subtotal -= sareePrice;
-                    updateSummary();
-                });
+                // Update total amount
+                totalAmount += cost;
+                totalAmountElement.textContent = `Rs. ${totalAmount} /-`;
 
                 // Clear the input fields after adding
-                document.getElementById('saree-id').value = '';
-                document.getElementById('saree-price').value = '';
+                document.getElementById('sareeId').value = '';
+                document.getElementById('cost').value = '';
+
+                // Add event listeners for edit and remove buttons
+                sareeCard.querySelector('.edit-button').addEventListener('click', function() {
+                    document.getElementById('sareeId').value = sareeId;
+                    document.getElementById('cost').value = cost;
+                    sareeCard.remove();  // Remove the saree card for editing
+                    totalAmount -= cost;  // Update total amount
+                    totalAmountElement.textContent = `Rs. ${totalAmount} /-`;
+                });
+
+                sareeCard.querySelector('.remove-button').addEventListener('click', function() {
+                    sareeCard.remove();  // Remove the saree card
+                    totalAmount -= cost;  // Update total amount
+                    totalAmountElement.textContent = `Rs. ${totalAmount} /-`;
+                });
+            } else {
+                alert("Please fill in both fields.");
             }
         });
-
-        function updateSummary() {
-            const tax = subtotal * 0.18;
-            const total = subtotal + tax;
-
-            document.getElementById('subtotal').textContent = subtotal.toFixed(2);
-            document.getElementById('tax').textContent = tax.toFixed(2);
-            document.getElementById('total').textContent = total.toFixed(2);
-        }
     </script>
 {% endblock %}

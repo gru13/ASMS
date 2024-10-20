@@ -230,7 +230,27 @@ def camera():
     # Render the camera template and pass the saree_name to it
     return render_template('camera.html', sareeId=saree_name)  # Ensure you have a camera.html template
 
+@app.route("/submit_billing", methods=['POST'])
+@login_required
+def submit_billing():
+    # Get form data
+    saree_ids = request.form.getlist('sareeId')
+    costs = request.form.getlist('cost')
+    address = request.form['address']
 
+    # Process the billing details, e.g., save to database
+    billing_data = {
+        'saree_details': [{'sareeId': saree_id, 'cost': cost} for saree_id, cost in zip(saree_ids, costs)],
+        'address': address,
+        'userId': session['user_id'],
+        'date': str(date.today())
+    }
+
+    # Save billing_data to Firestore or your database
+    billsDb.add(billing_data)
+
+    flash("Billing submitted successfully!")
+    return redirect(url_for('Billing'))  # Redirect back to the billing page or wherever needed
 
 if __name__ == "__main__":
     app.run(debug=True , port=8080)
