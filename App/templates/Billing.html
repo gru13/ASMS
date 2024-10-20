@@ -10,7 +10,7 @@
                 <h3>Add Saree Details</h3>
                 <div class="form-group">
                     <label for="sareeId">Saree ID</label>
-                    <input type="text" id="sareeId" name="sareeId" required placeholder="Enter Saree ID">
+                    <input type="text" id="sareeId" name="sareeId" required placeholder="Enter Saree ID" onblur="fetchSareePrice()">
                 </div>
                 <div class="form-group">
                     <label for="cost">Cost (Rs.)</label>
@@ -49,6 +49,28 @@
         const sareeListContainer = document.getElementById('saree-list-container');
         const totalAmountElement = document.getElementById('total-amount');
         let totalAmount = 0;
+
+        // Function to fetch saree price from the database based on sareeId
+        function fetchSareePrice() {
+            const sareeId = document.getElementById('sareeId').value;
+
+            if (sareeId) {
+                fetch(`/getSareePrice?sareeId=${sareeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.price) {
+                            document.getElementById('cost').value = data.price; // Auto-fill price
+                        } else {
+                            alert("Saree not found in database.");
+                            document.getElementById('cost').value = ''; // Clear the cost field
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching saree price:', error);
+                        alert("Error fetching saree price.");
+                    });
+            }
+        }
 
         document.getElementById('add-saree').addEventListener('click', function() {
             const sareeId = document.getElementById('sareeId').value;

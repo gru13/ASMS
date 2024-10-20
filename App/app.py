@@ -220,7 +220,7 @@ def AddSaree():
         session.pop('purchData', None)
         session.pop('sarees', None)
         
-        return redirect(url_for('Add'))  # Redirect after successful submission
+        return redirect(url_for('AddSaree'))  # Redirect after successful submission
 
     return render_template('AddSaree.html', data=data, session=session)
 
@@ -243,6 +243,21 @@ def camera():
         saree_name = "default"  # Handle the case where sareeId is not provided
     # Render the camera template and pass the saree_name to it
     return render_template('camera.html', sareeId=saree_name)  # Ensure you have a camera.html template
+
+
+@app.route("/getSareePrice")
+@login_required
+def getSareePrice():
+    sareeId = request.args.get('sareeId')
+
+    # Retrieve saree from Firebase by sareeId
+    saree_ref = sareDb.document(sareeId).get()
+    if saree_ref.exists:
+        saree_data = saree_ref.to_dict()
+        return jsonify({'price': saree_data.get('price')})
+    else:
+        return jsonify({'price': None})
+
 
 @app.route("/submit_billing", methods=['POST'])
 @login_required
