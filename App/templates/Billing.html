@@ -1,12 +1,107 @@
-<!-- Billing.html  -->
-
 {% extends "base.html" %}
 
-{% block title %}Billing{% endblock %}
+{% block Style %}
+    <link rel="stylesheet" href="{{url_for('static', filename='css/billing.css')}}">
+{% endblock %}
+
+{% block title %}
+    Billing
+{% endblock %}
 
 {% block contentSection %}
-    <h1>
-        This is from Billing
-    </h1>
+    <div id="abc">
+        <h2>Billing Information</h2>
 
-{% endblock  %}
+        <!-- Saree Information Form -->
+        <div class="saree-info-form">
+            <h3>Add Saree Information</h3>
+            <div class="form-group">
+                <label for="saree-id">Saree ID</label>
+                <input type="text" id="saree-id" name="saree_id" class="form-control" placeholder="Enter Saree ID" required>
+            </div>
+            <div class="form-group">
+                <label for="saree-price">Price</label>
+                <input type="text" id="saree-price" name="saree_price" class="form-control" placeholder="Enter Saree Price" required>
+            </div>
+            <button type="button" class="Styled-button" id="add-saree">Add Saree</button>
+        </div>
+
+        <!-- Display List of Added Sarees as Cards -->
+        <div class="saree-list-container">
+            <h3>Added Sarees</h3>
+            <div id="saree-card-list">
+                <!-- Cards will be displayed here -->
+            </div>
+        </div>
+
+        <!-- Address Section -->
+        <div class="address-info">
+            <h3>Shipping Address</h3>
+            <div class="form-group">
+                <label for="user-address">Address</label>
+                <input type="text" id="user-address" name="user_address" class="form-control" placeholder="Enter your address" required>
+            </div>
+        </div>
+
+        <!-- Payment Summary -->
+        <div id="billing-summary">
+            <h3>Payment Summary</h3>
+            <p>Subtotal: ₹ <span id="subtotal">0.00</span></p>
+            <p>Tax (18%): ₹ <span id="tax">0.00</span></p>
+            <p><strong>Total: ₹ <span id="total">0.00</span></strong></p>
+        </div>
+
+        <!-- Payment Button -->
+        <div id="payment-button">
+            <button type="submit" class="Styled-button">Proceed to Payment</button>
+        </div>
+    </div>
+
+    <!-- JavaScript to handle adding sarees and updating summary -->
+    <script>
+        let subtotal = 0;
+        document.getElementById('add-saree').addEventListener('click', function() {
+            const sareeId = document.getElementById('saree-id').value;
+            const sareePrice = parseFloat(document.getElementById('saree-price').value);
+
+            // Add to the list only if both fields are filled
+            if (sareeId && !isNaN(sareePrice)) {
+                const sareeList = document.getElementById('saree-card-list');
+
+                // Create a new card for the saree
+                const card = document.createElement('div');
+                card.className = 'saree-card';
+                card.innerHTML = `
+                    <p><strong>ID:</strong> ${sareeId}</p>
+                    <p><strong>Price:</strong> ₹${sareePrice.toFixed(2)}</p>
+                    <button class="remove-button">Remove</button>
+                `;
+                sareeList.appendChild(card);
+
+                // Update subtotal
+                subtotal += sareePrice;
+                updateSummary();
+
+                // Add event listener to the remove button
+                card.querySelector('.remove-button').addEventListener('click', function() {
+                    sareeList.removeChild(card);
+                    subtotal -= sareePrice;
+                    updateSummary();
+                });
+
+                // Clear the input fields after adding
+                document.getElementById('saree-id').value = '';
+                document.getElementById('saree-price').value = '';
+            }
+        });
+
+        function updateSummary() {
+            const tax = subtotal * 0.18;
+            const total = subtotal + tax;
+
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('tax').textContent = tax.toFixed(2);
+            document.getElementById('total').textContent = total.toFixed(2);
+        }
+    </script>
+{% endblock %}

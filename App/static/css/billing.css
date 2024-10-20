@@ -1,21 +1,66 @@
+/* billing.css */
 
-{% extends "base.html" %}
-{% block Style %}
-    <link rel="stylesheet" href="{{url_for('static', filename = 'css/inventory.css')}}">
-{% endblock %}
-{% block title %}Inventory{% endblock %}
+body {
+    background-color: var(--grey-50);
+}
 
-{% block contentSection %}
-    <div id="Collections">
-        <div id = 'header'> 
-            <div id = "Rigth">
-                <h2>RIGH </h2>
-            </div>
-            <div id = "Left">
-                <h2>
-                    <button class="Styled-button" onclick = "window.location.href='{{url_for('AddSaree_info')}}'"> ADD </button>
-                </h2>
-            </div>
-        </div>
-    </div>
-{% endblock  %}
+#billing-container {
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.saree-info-form {
+    margin-bottom: 20px;
+}
+
+.saree-list-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+#saree-card-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.saree-card {
+    background-color: var(--grey-100);
+    padding: 15px;
+    border: 1px solid var(--grey-300);
+    border-radius: 8px;
+    width: 150px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.saree-card p {
+    margin: 0 0 10px;
+}
+
+.remove-button {
+    background-color: var(--error-500);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.remove-button:hover {
+    background-color: var(--error-700);
+}
+
+/* Additional styling for the payment summary and address sections */
+.address-info {
+    margin-top: 20px;
+}
+
+#billing-summary {
+    margin-top: 20px;
+    border-top: 1px solid var(--grey-300);
+    padding-top: 10px;
+}
