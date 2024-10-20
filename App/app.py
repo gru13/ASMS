@@ -193,7 +193,7 @@ def AddSaree_info():
 
     return render_template('AddSaree_info.html', data=data, session=session)
 
-@app.route("/AddSaree", methods = ["POST", 'GET'])
+@app.route("/AddSaree", methods=["POST", "GET"])
 @login_required
 def AddSaree():
     # Retrieve the stored data from the session
@@ -202,14 +202,28 @@ def AddSaree():
 
     if not purchData or not sarees:
         return redirect(url_for('AddSaree_info'))  # If no data, redirect back to form
+
+    # Store back to session to persist during form submission
     session['purchData'] = purchData
     session['sarees'] = sarees
-    
+
     if request.method == 'POST':
+        # Save purchase data in the 'purchDb' collection
         purchDb.document(document_id=session['purchId']).set(session['purchData'])
-        # for sa in sarees:
-    
-    return render_template('AddSaree.html', data=data, session = session)
+        
+        # Save each saree's data in the 'sareDb' collection
+        for saree in sarees:
+            sareeId = saree['sareeId']
+            sareDb.document(sareeId).set(saree)  # Storing saree details in Firebase
+        
+        # Clear session after saving to Firebase to avoid duplicate data on refresh
+        session.pop('purchData', None)
+        session.pop('sarees', None)
+        
+        return redirect(url_for('Add'))  # Redirect after successful submission
+
+    return render_template('AddSaree.html', data=data, session=session)
+
 
 @app.route('/camera')
 def camera():
