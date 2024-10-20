@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}
+            home
+        {% endblock%}
+    </title>
+    <link rel="stylesheet" href="{{url_for('static', filename = 'css/base.css')}}">
+    {% block Style %}
+    {% endblock %}
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+</head>
+<body>
+    <div id = "sidebar">
+        <div id="Title">
+            {% if session['device'] == 'Mobile' %}
+                <img class = "icons" alt ="logo" src = {{url_for('static', filename='icons/Abirami Silks.jpg')}}>
+            {% else %}
+                <h2>ABIRAMI SILK</h2>
+            {% endif %}
+        </div>
+        <div id = "sidebar-list">
+            <div id = "sidebar-top">
+                {% for top in data['sidebar_items']['top']%}
+                    <button class="sidebar-item" onclick="window.location.href='{{ url_for(top['url'])}}'">
+                        <span class="material-symbols-rounded icons" >{{top['icon']}}</span>
+                        {% if session['device'] != 'Mobile' %}
+                            <p class = "text">{{top['text']}}</p>
+                        {% endif %}
+                    </button>
+                {% endfor %}
+            </div>
+            <div id="sidebar-bottom">
+                {% for top in data['sidebar_items']['bottom']%}
+                    <button class="sidebar-item" onclick="window.location.href='{{ url_for(top['url'])}}'">
+                        <span class="material-symbols-rounded icons" >{{top['icon']}}</span>
+                        {% if session['device'] != 'Mobile' %}
+                            <p class = "text">{{top['text']}}</p>
+                        {% endif %}
+                    </button>
+                {% endfor %}
+                
+            </div>
+            
+        </div>
+    </div>
+    <div id = "contentSection">
+        {% block contentSection %}
+    
+        {% endblock %}
+    </div>
+</body>
+</html>

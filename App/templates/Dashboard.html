@@ -1,0 +1,18 @@
+<!-- index.html  -->
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block contentSection %}
+    <h1>
+        This is from index 
+    </h1>
+    {% with message = get_flashed_messages() %}
+    {% if message %}
+        {% for m in message %}
+            <p>{{m}}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+{% endblock  %}

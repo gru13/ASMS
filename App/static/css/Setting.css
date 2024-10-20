@@ -1,0 +1,52 @@
+@import url('base.css');
+
+.Setting-Page{
+    width: 90vw;
+    /* height: 100%; */
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.img-name{
+    position: relative;
+    right: 13em;
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.image {
+    display: flex;    
+    justify-content: center; /* Center horizontally */
+    align-items: center;    /* Center vertically */
+    border: 1px solid var(--primary-500);
+    background-color: var(--primary-800);
+    color: var(--grey-100);
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 50%;
+    font-size: 5em; /* Adjust this value to change the icon size */
+}
+#Name{
+    padding-left: 3em;
+    /* font-size: 4em; */
+    h2{
+        font-size: 3em;
+        color: var(--grey-800);
+        margin: 0;
+    }
+    h5{
+        font-size: 1em;
+        color: var(--grey-400);
+        margin: 0;
+    }
+}
+
+
+#restDetail{
+    display: flex;
+    justify-content: center;
+}

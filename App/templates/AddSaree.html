@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block Style %}
+    {% if session['device'] ==  'Mobile'%}
+        <link rel="stylesheet" href="{{url_for('static', filename = 'css/AddSaree-mobile.css')}}">
+    {% else %}
+        <link rel="stylesheet" href="{{url_for('static', filename = 'css/AddSaree.css')}}">
+    {% endif %}
+{% endblock %}
+{% block title %}AddSaree{% endblock %}
+
+{% set purchId = session['purchId'] %}
+{% set sarees = session['sarees'] %}
+{% set purchData = session['purchData'] %}
+
+{% block contentSection %}
+    <div class = "AddSaree">
+        <div class = "SareeInputContainer">
+            {% for item in sarees %}
+            <div class = "SareeInputCard">
+                <div class = "header-SareeInputCard">
+                    <h2>Saree Number : {{item['sareeId']}}</h2>
+                    <h2>Purchase Numer : {{purchId}} </h2
+                </div>
+                <hr>
+                <div class = "image-content">
+                    <div class = "Left">
+                        <div class="form-group">
+                            <label for="Source">Source</label>
+                            <input type="text" id="Source" name="Source" class="form-control"  value = {{purchData['source']}} disabled >
+                        </div>
+                        <div class="form-group">    
+                            <label for="Cateogry">Cateogry</label>
+                            <input type="text" id="Cateogry" name="Cateogry" class="form-control" value = {{item['Category']}}  required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Price">Price</label>
+                            <input type="text" id="Price" name="Price" class="form-control" value = {{item['price']}}  required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Color">Color</label>
+                            <input type="text" id="Color" name="Color" class="form-control" placeholder ="Enter the Color"  required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Color">Color</label>
+                            <input type="text" id="Color" name="Color" class="form-control" placeholder ="Enter the Color"  required>
+                        </div>
+                    </div>
+                    <div class = "Rigth">
+                        <div class = "image-sa" id = "{{item['sareeId']}}-Overview">
+                            {% if item['Images']['Overview'] == '' %}
+                                    <button class="material-symbols-outlined icon" onclick="window.location.href='/camera?sareeId={{ item['sareeId'] }}-Overview';">add_a_photo</button>    
+                                {% else %}
+                                    <img class = "image-box" src="" alt="Overview" id = "{{item['sareeId']}}-Overview-img">
+                                {% endif %}
+                                
+                            </div>
+                            <div class = "image-sa" id = "{{item['sareeId']}}-Fullview">
+                                {% if item['Images']['Fullview'] == '' %}
+                                <button class="material-symbols-outlined icon" onclick="window.location.href='/camera?sareeId={{ item['sareeId'] }}-Fullview';">add_a_photo</button>    
+                                {% else %}
+                                <img class = "image-box" src="" alt="Fullview" id = "{{item['sareeId']}}-Fullview-img">
+                                {% endif %}
+                            </div>
+                            <div class = "image-sa" id = "{{item['sareeId']}}-Border">
+                                {% if item['Images']['Border'] == '' %}
+                                <button class="material-symbols-outlined icon" onclick="window.location.href='/camera?sareeId={{ item['sareeId'] }}-Border';">add_a_photo</button>    
+                                {% else %}
+                                <img class = "image-box" src="" alt="Border" id = "{{item['sareeId']}}-Border-img">
+                                {% endif %}
+                            </div>
+                            <div class = "image-sa" id = "{{item['sareeId']}}-Pallu">
+                                {% if item['Images']['Pallu'] == '' %}
+                                    <button class="material-symbols-outlined icon" onclick="window.location.href='/camera?sareeId={{ item['sareeId'] }}-Pallu';">add_a_photo</button>    
+                                {% else %}
+                                <img class = "image-box" src="" alt="Pallu" id = "{{item['sareeId']}}-Pallu-img">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class = "submit-for-AddSaree"> 
+            <form action="{{ url_for('AddSaree') }}" method="POST">
+                <button type="submit" class = "Styled-button">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
+        import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-storage.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAT_xwEhBVVbG8c96ml4N-6b3zrcy5uJp0",
+            authDomain: "asms-3a9bd.firebaseapp.com",
+            projectId: "asms-3a9bd",
+            storageBucket: "asms-3a9bd.appspot.com",
+            messagingSenderId: "260798332577",
+            appId: "1:260798332577:web:eb09044bfceb4d6abc7ae0"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+
+        // Load images from Firebase Storage
+        async function loadImage(sareeId, imageType) {
+            const imageRef = ref(storage, `images/${sareeId}-${imageType}.png`);
+            try {
+                const url = await getDownloadURL(imageRef);
+                document.getElementById(`${sareeId}-${imageType}-img`).src = url;
+            } catch (error) {
+                console.log('Image not found:', imageType);
+            }
+        }
+
+        // Load images for each saree and type
+        {% for item in sarees %}
+            loadImage("{{ item['sareeId'] }}", "Overview");
+            loadImage("{{ item['sareeId'] }}", "Fullview");
+            loadImage("{{ item['sareeId'] }}", "Border");
+            loadImage("{{ item['sareeId'] }}", "Pallu");
+        {% endfor %}
+        
+    </script>
+        
+{% endblock  %}
+
+       

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="{{url_for('static', filename = 'css/sPages.css')}}">
+    
+</head>
+<body>
+    <div class="s-container">
+        <h1>Create an account</h1>
+        <br><br><br>
+        <form method="POST" action="{{ url_for('signup') }}">
+            <div class="form-group">
+                <label for="name">Name*</label>
+                <input type="name" id="name" name="name" class="form-control" placeholder = "Enter your name"required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone*</label>
+                <input type="phone" id="phone" name="phone" class="form-control" placeholder = "Enter your phone"required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email*</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder = "Enter your email"  required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password*</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder = "Create a password"  minlength="8" required >
+                <p class = "captionInfo">Must be at least 8 characters.</p>
+            </div>
+            <button type="submit" id="login-button">Sign Up</button>
+        </form>
+        <p id="captionInfo">Already have an account? <a href="{{ url_for('login') }}">Log in </a></p>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="alert alert-info mt-3">
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+

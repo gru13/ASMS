@@ -1,0 +1,117 @@
+@import url("base.css");
+
+#contentSection {
+    display: flex;
+    width: 80vw;
+    justify-content: center;
+}
+
+
+.SareeInputCard{
+    width: calc(50em + 30vw);
+    padding: 0 2vw;
+    h2{
+        color: var(--grey-400);
+    }
+    hr{
+        color: var(--grey-200);
+    }
+}
+
+.SareeInputContainer{
+    display: flex;
+    overflow-x: auto;
+    /* overflow-y: hidden; */
+    width: 70vw;
+    /* align-items: center; */
+    position: relative;
+    left: 1vw;
+    scrollbar-width: none;
+}
+
+
+.image-sa{
+    display: flex;
+    width:50vw;
+    height: 50vw;
+    /* height: 2vw;
+    width: 2vw; */
+    border: 2px solid black;
+    border-radius: 0.4em;
+    margin: 0.5em;
+    justify-content: center;
+}
+
+.Rigth{
+    display:flex;
+    flex-direction: column;
+}
+
+.Left{
+    width: 20vw;
+}
+
+.image-content{
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+}
+
+.header-SareeInputCard{
+    display: flex;
+    width: 50vw;
+    justify-content: space-between;
+    position: relative; /* Ensure it's in the correct flow */
+    top: 0;
+}
+
+.submit-for-AddSaree{
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-end;
+    padding-bottom: 5vw;
+    flex-direction: row-reverse;
+}
+
+.form-group{
+    display: flex;
+    flex-direction: column; 
+    margin-bottom: 1em;
+    label{
+        color: var(--grey-800);
+        font-weight: 500;
+        padding-bottom: 5px;
+    }
+    input{
+        color: var(--grey-500);
+        border: var(--grey-400) solid 1px;
+        padding-left: 0.5em ;
+        padding-right: 0.5em ;
+        height: 2em;
+        width: 15em;
+        border-radius: 0.5em;
+    }
+}
+
+.AddSaree{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.AddSaree_info{
+    display: flex;
+    align-items: center;
+}
+
+.icon{
+    background-color: inherit;
+    border: 0;
+    font-size: 4em !important ;
+}
+
+.image-box{
+    height: inherit;
+    width: inherit;   
+}
+

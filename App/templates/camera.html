@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Capture</title>
+    <style>
+        /* Style for full-screen video display */
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black; /* Background color for better visibility */
+        }
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;  /* Make video full width of viewport */
+            height: 100vh; /* Make video full height of viewport */
+            object-fit: cover; /* Ensure video covers the entire area */
+            z-index: -1; /* Place the video behind other elements */
+        }
+        canvas {
+            display: none; /* Hide canvas, used for image capture */
+        }
+        #capture, #switch-camera {
+            position: relative; /* Keep buttons in the viewport */
+            z-index: 1; /* Ensure buttons are above video */
+            margin: 20px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        /* Modal styles */
+        #confirmation-modal {
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.7); 
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center;
+        }
+        #confirmed-photo {
+            width: 100%; 
+            max-width: 400px; 
+            margin-bottom: 10px;
+        }
+        #error-message {
+            color: red; 
+            display: none; 
+            position: relative; 
+            z-index: 1; /* Ensure error message is above video */
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-storage.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAT_xwEhBVVbG8c96ml4N-6b3zrcy5uJp0",
+            authDomain: "asms-3a9bd.firebaseapp.com",
+            databaseURL: "https://asms-3a9bd-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "asms-3a9bd",
+            storageBucket: "asms-3a9bd.appspot.com",
+            messagingSenderId: "260798332577",
+            appId: "1:260798332577:web:eb09044bfceb4d6abc7ae0",
+            measurementId: "G-JFG419DBJM"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+
+        // Camera access
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const confirmedPhoto = document.getElementById('confirmed-photo');
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const captureButton = document.getElementById('capture');
+        const switchCameraButton = document.getElementById('switch-camera');
+        const confirmButton = document.getElementById('confirm-button');
+        const retakeButton = document.getElementById('retake-button');
+        const errorMessage = document.getElementById('error-message');
+
+        let currentCamera = 'user'; // 'user' for front camera, 'environment' for rear camera
+        let stream;
+
+        async function startCamera() {
+            try {
+                const constraints = {
+                    video: {
+                        facingMode: currentCamera,
+                        width: { exact: 1920 }, // Request maximum width
+                        height: { exact: 1080 } // Request maximum height
+                    }
+                };
+
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = stream;
+
+                // Set canvas size to match the video stream
+                const videoTrack = stream.getVideoTracks()[0];
+                const settings = videoTrack.getSettings();
+                canvas.width = settings.width;  // Set canvas width to the camera's width
+                canvas.height = settings.height; // Set canvas height to the camera's height
+                
+                errorMessage.style.display = 'none'; // Hide error message if camera access is granted
+            } catch (error) {
+                console.error("Error accessing the camera: ", error);
+                errorMessage.style.display = 'block'; // Show error message
+            }
+        }
+
+        // Start camera on page load
+        startCamera();
+
+        // Capture photo
+        captureButton.addEventListener('click', () => {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/png');
+            confirmedPhoto.src = dataUrl; // Set the captured photo to the modal
+            confirmedPhoto.style.display = 'block'; // Show the captured photo
+            confirmationModal.style.display = 'flex'; // Show confirmation modal
+        });
+
+        // Save image to Firebase
+        function saveImageToFirebase(dataUrl, sareeId) {
+            const storageRef = ref(storage, `images/${sareeId}.png`); // Set image path
+            const byteString = atob(dataUrl.split(',')[1]);
+            const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new Uint8Array(byteString.length);
+
+            for (let i = 0; i < byteString.length; i++) {
+                ab[i] = byteString.charCodeAt(i);
+            }
+
+            const blob = new Blob([ab], { type: mimeString });
+
+            // Return a promise that resolves when the upload completes
+            return uploadBytes(storageRef, blob).then((snapshot) => {
+                console.log('Uploaded a blob or file!', snapshot);
+                return getDownloadURL(snapshot.ref).then((downloadURL) => {
+                    console.log('File available at', downloadURL);
+                    return downloadURL; // Resolve with the download URL if needed
+                });
+            }).catch((error) => {
+                console.error("Upload failed:", error);
+                throw error; // Reject the promise if there's an error
+            });
+        }
+
+        // Switch camera
+        switchCameraButton.addEventListener('click', () => {
+            if (stream) {
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+            }
+            currentCamera = currentCamera === 'user' ? 'environment' : 'user';
+            startCamera();
+        });
+
+        // Cleanup stream on unload
+        window.addEventListener('beforeunload', () => {
+            if (stream) {
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+            }
+        });
+
+        // Confirm button logic
+        confirmButton.addEventListener('click', () => {
+            const sareeId = new URLSearchParams(window.location.search).get('sareeId');
+            console.log("Confirm button clicked");
+            
+            saveImageToFirebase(confirmedPhoto.src, sareeId)
+                .then(() => {
+                    // Wait for 2 seconds before redirecting
+                    setTimeout(() => {
+                        window.location.href = document.referrer; // Redirect to the previous page
+                    }, 2000); // 2000 milliseconds = 2 seconds
+                })
+                .catch((error) => {
+                    console.error("Error saving image:", error);
+                    // Optionally, handle error here (e.g., show a message to the user)
+                });
+        });
+
+        // Retake button logic
+        retakeButton.addEventListener('click', () => {
+            confirmationModal.style.display = 'none'; // Hide confirmation modal
+        });
+    </script>
+</head>
+<body>
+    <h1 style="color: white; z-index: 1; position: relative;">Capture a Photo</h1>
+    <video id="video" autoplay></video>
+    <button id="capture">Capture Photo</button>
+    <button id="switch-camera">Switch Camera</button>
+    <canvas id="canvas"></canvas>
+    <p id="error-message">Please allow camera access to capture a photo.</p>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" style="display:none; flex-direction: column;">
+        <div style="background:white; padding:20px; border-radius:5px; text-align:center;">
+            <h2>Confirm Photo</h2>
+            <img id="confirmed-photo" alt="Captured Photo" />
+            <div>
+                <button id="confirm-button">OK</button>
+                <button id="retake-button">Retake</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

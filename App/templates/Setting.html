@@ -1,0 +1,20 @@
+<!-- Setting.html  -->
+
+{% extends "base.html" %}
+
+{% block title %}Setting{% endblock %}
+
+{% block Style %}    
+    <link rel="stylesheet" href="{{url_for('static', filename = 'css/Setting.css')}}">
+{% endblock%}
+
+{% block contentSection %}
+    {{data}}
+    {% with message = get_flashed_messages() %}
+        {% if message %}
+            {% for m in message %}
+                <p>{{m}}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endblock  %}

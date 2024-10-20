@@ -1,0 +1,54 @@
+@import url("base.css");
+
+.s-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    line-gap-override: 1em;
+    h1{
+        margin: 0;
+        padding-bottom: 0.5em;
+        color: var(--grey-900);
+    }
+    h5{
+        color: var(--grey-500);
+        margin: 0;
+    }
+}
+
+#login-button{
+    height: 2em;
+    width: 26em;
+}
+
+#captionInfo{
+    letter-spacing: 0;
+    color: var(--grey-500);
+    a{
+        text-decoration: none;
+        color: var(--primary-800);
+    }
+}
+
+#sessionForget{
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1em;
+}
+
+#session{
+    display: flex;
+
+}
+
+#Forgot{
+    color: var(--primary-600);
+    border: 0;
+    background-color: inherit;
+}
+
+.alert{
+    color: var(--error-500);
+}
