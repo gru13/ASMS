@@ -21,7 +21,7 @@ app.secret_key = f"{time.time()}"  # Change this to a random secret key
 
 app.permanent_session_lifetime = timedelta(days=30)
 # Initialize Firebase Admin SDK
-cred = credentials.Certificate("./serviceAccountKey.json")
+cred = credentials.Certificate("App\serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -89,7 +89,7 @@ def login():
     os = user_agent.os.family
     if request.method == "POST":
         # Handle email/password sign-in only
-        with open("./api.json", "r") as f:
+        with open("App/api.json", "r") as f:
             api = json.load(f)
         payload = {
             "email": request.form['email'],

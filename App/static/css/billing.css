@@ -1,0 +1,21 @@
+
+{% extends "base.html" %}
+{% block Style %}
+    <link rel="stylesheet" href="{{url_for('static', filename = 'css/inventory.css')}}">
+{% endblock %}
+{% block title %}Inventory{% endblock %}
+
+{% block contentSection %}
+    <div id="Collections">
+        <div id = 'header'> 
+            <div id = "Rigth">
+                <h2>RIGH </h2>
+            </div>
+            <div id = "Left">
+                <h2>
+                    <button class="Styled-button" onclick = "window.location.href='{{url_for('AddSaree_info')}}'"> ADD </button>
+                </h2>
+            </div>
+        </div>
+    </div>
+{% endblock  %}
