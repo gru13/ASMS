@@ -14,7 +14,7 @@
                 </div>
                 <div class="form-group">
                     <label for="cost">Cost (Rs.)</label>
-                    <input type="number" id="cost" name="cost" required placeholder="Enter Cost">
+                    <input type="number" id="cost" name="cost" required placeholder="Enter Cost" readonly>
                 </div>
                 <button type="button" class="Styled-button" id="add-saree">Add Saree</button>
             </div>
@@ -43,6 +43,15 @@
 
             <button type="submit" class="Styled-button">Submit Billing</button>
         </form>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="alert alert-info mt-3">
+            {% for message in messages %}
+              {{ message }}
+            {% endfor %}
+          </div>
+        {% endif %}
+        {% endwith %}
     </div>
 
     <script>
@@ -70,6 +79,8 @@
                         console.error('Error fetching saree price:', error);
                         alert("Error fetching saree price.");
                     });
+            } else {
+                document.getElementById('cost').value = ''; // Clear the cost field
             }
         }
 
@@ -78,6 +89,13 @@
             const cost = parseFloat(document.getElementById('cost').value);
 
             if (sareeId && cost) {
+                // Check if saree is already added
+                const existingSarees = Array.from(sareeListContainer.children).map(card => card.querySelector('p strong').innerText);
+                if (existingSarees.includes(`Saree ID: ${sareeId}`)) {
+                    alert("This saree has already been added.");
+                    return; // Prevent adding duplicate sarees
+                }
+
                 // Create saree card
                 const sareeCard = document.createElement('div');
                 sareeCard.classList.add('saree-card');
