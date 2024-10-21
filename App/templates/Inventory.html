@@ -1,5 +1,3 @@
-<!-- Inventory.html  -->
-
 {% extends "base.html" %}
 {% block Style %}
     <link rel="stylesheet" href="{{url_for('static', filename = 'css/inventory.css')}}">
@@ -8,15 +6,29 @@
 
 {% block contentSection %}
     <div id="Collections">
-        <div id = 'header'> 
-            <div id = "Rigth">
+        <div id="header"> 
+            <div id="Right">
                 <h2>RIGH </h2>
             </div>
-            <div id = "Left">
+            <div id="Left">
                 <h2>
-                    <button class="Styled-button" onclick = "window.location.href='{{url_for('AddSaree_info')}}'"> ADD </button>
+                    <button class="Styled-button" onclick="window.location.href='{{url_for('AddSaree_info')}}'"> ADD </button>
                 </h2>
             </div>
         </div>
+        
+        <div id="saree-list">
+            {% if sarees %}
+                {% for saree in sarees %}
+                    <div class="saree-card">
+                        <img src="{{ url_for('static', filename='images/' + saree['sareeId'] + '-someImage.jpg') }}" alt="Image of {{ saree['sareeId'] }}">
+                        <p><strong>Saree ID:</strong> {{ saree['sareeId'] }}</p>
+                        <p><strong>Price:</strong> Rs. {{ saree['price'] }} /-</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No sarees available in the inventory.</p>
+            {% endif %}
+        </div>
     </div>
-{% endblock  %}
+{% endblock %}

@@ -60,10 +60,20 @@ def login_required(f):
 def index():
     return render_template("Dashboard.html",data=data,  session=session)
 
-@app.route("/Inventory")
+@app.route('/inventory')
 @login_required
 def Inventory():
-    return render_template("Inventory.html",data=data,  session=session)
+    # Fetch sarees from Firebase
+    sarees_ref = sareDb.stream()  # Fetch all sarees
+    sarees = []
+
+    for saree in sarees_ref:
+        saree_data = saree.to_dict()
+        saree_data['sareeId'] = saree.id  # Add the saree ID
+        sarees.append(saree_data)
+
+    return render_template('Inventory.html', sarees=sarees, data = data)
+
 
 @app.route("/Billing")
 @login_required

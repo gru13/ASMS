@@ -16,3 +16,24 @@
     flex-wrap: wrap;
 
 }
+
+#saree-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.saree-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    width: 200px; /* Adjust width as needed */
+    text-align: center;
+}
+
+.saree-card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
