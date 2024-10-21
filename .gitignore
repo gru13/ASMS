@@ -1,2 +1,3 @@
 .venv
 /App/serviceAccountKey.json
+/App/flask_session

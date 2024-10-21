@@ -8,6 +8,7 @@ from datetime import timedelta , date, datetime
 import user_agents
 import time
 from db import * 
+import os
 
 app = Flask(__name__)
 
@@ -16,6 +17,10 @@ app.config['SESSION_TYPE'] = 'filesystem'  # You can also use 'redis' or 'sqlalc
 app.config['SESSION_PERMANENT'] = False
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 Session(app)  # Initialize the Flask-Session extension
+imageDir =  os.path.join('static', 'images')
+if not os.path.exists(imageDir):
+    os.makedirs(imageDir)
+
 
 app.secret_key = f"{time.time()}"  # Change this to a random secret key
 
@@ -70,8 +75,11 @@ def Inventory():
     for saree in sarees_ref:
         saree_data = saree.to_dict()
         saree_data['sareeId'] = saree.id  # Add the saree ID
+        for image in saree_data['Images'].keys():
+            saree_data['Images'][image] = r'https://firebasestorage.googleapis.com/v0/b/asms-3a9bd.appspot.com/o/images%2F'+saree_data['Images'][image] + '.png?alt=media'
         sarees.append(saree_data)
 
+    print(sarees)
     return render_template('Inventory.html', sarees=sarees, data = data)
 
 
