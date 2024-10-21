@@ -49,6 +49,7 @@
         const sareeListContainer = document.getElementById('saree-list-container');
         const totalAmountElement = document.getElementById('total-amount');
         let totalAmount = 0;
+        let sareeCounter = 0; // To track unique IDs for hidden inputs
 
         // Function to fetch saree price from the database based on sareeId
         function fetchSareePrice() {
@@ -88,6 +89,25 @@
                 `;
                 sareeListContainer.appendChild(sareeCard);
 
+                // Create hidden input fields for sareeId and cost
+                const hiddenSareeId = document.createElement('input');
+                hiddenSareeId.type = 'hidden';
+                hiddenSareeId.name = 'sareeId';
+                hiddenSareeId.value = sareeId;
+                hiddenSareeId.id = `sareeId-${sareeCounter}`;
+
+                const hiddenCost = document.createElement('input');
+                hiddenCost.type = 'hidden';
+                hiddenCost.name = 'cost';
+                hiddenCost.value = cost;
+                hiddenCost.id = `cost-${sareeCounter}`;
+
+                // Append hidden inputs to the form
+                document.getElementById('billing-form').appendChild(hiddenSareeId);
+                document.getElementById('billing-form').appendChild(hiddenCost);
+
+                sareeCounter++; // Increment the counter for the next saree
+
                 // Update total amount
                 totalAmount += cost;
                 totalAmountElement.textContent = `Rs. ${totalAmount} /-`;
@@ -100,13 +120,21 @@
                 sareeCard.querySelector('.edit-button').addEventListener('click', function() {
                     document.getElementById('sareeId').value = sareeId;
                     document.getElementById('cost').value = cost;
-                    sareeCard.remove();  // Remove the saree card for editing
+                    
+                    // Remove the saree card and the hidden inputs for editing
+                    sareeCard.remove();
+                    document.getElementById(`sareeId-${sareeCounter - 1}`).remove();
+                    document.getElementById(`cost-${sareeCounter - 1}`).remove();
+                    
                     totalAmount -= cost;  // Update total amount
                     totalAmountElement.textContent = `Rs. ${totalAmount} /-`;
                 });
 
                 sareeCard.querySelector('.remove-button').addEventListener('click', function() {
                     sareeCard.remove();  // Remove the saree card
+                    document.getElementById(`sareeId-${sareeCounter - 1}`).remove();
+                    document.getElementById(`cost-${sareeCounter - 1}`).remove();
+
                     totalAmount -= cost;  // Update total amount
                     totalAmountElement.textContent = `Rs. ${totalAmount} /-`;
                 });
@@ -114,5 +142,6 @@
                 alert("Please fill in both fields.");
             }
         });
+        
     </script>
 {% endblock %}

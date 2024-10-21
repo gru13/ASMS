@@ -26,7 +26,7 @@ app.secret_key = f"{time.time()}"  # Change this to a random secret key
 
 app.permanent_session_lifetime = timedelta(days=30)
 # Initialize Firebase Admin SDK
-cred = credentials.Certificate("./serviceAccountKey.json")
+cred = credentials.Certificate("App/serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -107,7 +107,7 @@ def login():
     os = user_agent.os.family
     if request.method == "POST":
         # Handle email/password sign-in only
-        with open("./api.json", "r") as f:
+        with open("App/api.json", "r") as f:
             api = json.load(f)
         payload = {
             "email": request.form['email'],
@@ -270,11 +270,19 @@ def getSareePrice():
 
     # Retrieve saree from Firebase by sareeId
     saree_ref = sareDb.document(sareeId).get()
+    
     if saree_ref.exists:
         saree_data = saree_ref.to_dict()
-        return jsonify({'price': saree_data.get('price')})
+        price = saree_data.get('price')
+        status = saree_data.get('status')  # Check if saree is billed
+        
+        if status == 'billed':
+            return jsonify({'price': price, 'status': 'billed'})  # Return status as billed
+        else:
+            return jsonify({'price': price, 'status': 'unbilled'})  # Return status as unbilled
     else:
-        return jsonify({'price': None})
+        return jsonify({'price': None, 'status': None})  # Saree not found
+
 
 
 @app.route("/submit_billing", methods=['POST'])
@@ -285,7 +293,7 @@ def submit_billing():
     costs = request.form.getlist('cost')
     address = request.form['address']
 
-    # Process the billing details, e.g., save to database
+    # Prepare billing details for saving
     billing_data = {
         'saree_details': [{'sareeId': saree_id, 'cost': cost} for saree_id, cost in zip(saree_ids, costs)],
         'address': address,
@@ -293,11 +301,22 @@ def submit_billing():
         'date': str(date.today())
     }
 
-    # Save billing_data to Firestore or your database
+    # Save billing data to Firestore or your database
     billsDb.add(billing_data)
 
-    flash("Billing submitted successfully!")
-    return redirect(url_for('Billing'))  # Redirect back to the billing page or wherever needed
+    # Loop through each saree and update its status to 'billed'
+    for saree_id in saree_ids:
+        saree_ref = sareDb.document(saree_id)
+        saree = saree_ref.get()
+        
+        if saree.exists:
+            # Update the status to 'billed'
+            saree_ref.update({'status': 'billed'})
+        else:
+            flash(f"Saree with ID {saree_id} does not exist.", "error")
+    flash("Billing has been done successfully")
+    return redirect(url_for('Billing'))  # Redirect back to the billing page or another appropriate page
+
 
 if __name__ == "__main__":
     app.run(debug=True , port=8080)
